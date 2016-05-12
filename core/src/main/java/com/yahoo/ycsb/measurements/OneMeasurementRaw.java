@@ -139,6 +139,14 @@ public class OneMeasurementRaw extends OneMeasurement {
   }
 
   @Override
+  public synchronized void measure(int latency) {
+    totalLatency += latency;
+    windowTotalLatency += latency;
+    windowOperations++;
+
+    measurements.add(new RawDataPoint("", latency));
+  }
+
   public synchronized void measure(String key, int latency) {
     totalLatency += latency;
     windowTotalLatency += latency;

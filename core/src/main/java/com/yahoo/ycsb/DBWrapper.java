@@ -152,7 +152,7 @@ public class DBWrapper extends DB
     return res;
   }
 
-  private void measure(String op, String key, Status result, long intendedStartTimeNanos,
+  private void measure(String op, Status result, long intendedStartTimeNanos,
     long startTimeNanos, long endTimeNanos) {
       measure(op, "", result, intendedStartTimeNanos, startTimeNanos, endTimeNanos);
   }
@@ -170,7 +170,7 @@ public class DBWrapper extends DB
     }
     _measurements.measure(measurementName, key,
         (int)((endTimeNanos-startTimeNanos)/1000));
-    _measurements.measureIntended(measurementName, key,
+    _measurements.measureIntended(measurementName,
         (int)((endTimeNanos-intendedStartTimeNanos)/1000));
   }
 

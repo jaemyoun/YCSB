@@ -193,6 +193,11 @@ public class Measurements {
    * Report a single value of a single metric. E.g. for read latency, operation="READ" and latency is the measured
    * value.
    */
+  public void measure(String operation, int latency)
+  {
+    measure(operation, "", latency);
+  }
+
   public void measure(String operation, String key, int latency)
   {
     if(_measurementInterval==1)

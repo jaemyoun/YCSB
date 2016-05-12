@@ -47,6 +47,10 @@ public abstract class OneMeasurement {
 
   public abstract void measure(int latency);
 
+  public void measure(String key, int latency) {
+    measure(latency);
+  }
+
   public abstract String getSummary();
 
   /**
