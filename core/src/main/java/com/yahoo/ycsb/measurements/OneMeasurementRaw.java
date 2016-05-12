@@ -41,15 +41,21 @@ public class OneMeasurementRaw extends OneMeasurement {
    */
   class RawDataPoint {
     private final long timestamp;
+    private final String key;
     private final int value;
 
-    public RawDataPoint(int value) {
+    public RawDataPoint(String key, int value) {
       this.timestamp = System.currentTimeMillis();
+      this.key = key;
       this.value = value;
     }
 
     public long timeStamp() {
       return timestamp;
+    }
+
+    public String key(){
+      return key;
     }
 
     public int value() {
@@ -133,12 +139,12 @@ public class OneMeasurementRaw extends OneMeasurement {
   }
 
   @Override
-  public synchronized void measure(int latency) {
+  public synchronized void measure(String key, int latency) {
     totalLatency += latency;
     windowTotalLatency += latency;
     windowOperations++;
 
-    measurements.add(new RawDataPoint(latency));
+    measurements.add(new RawDataPoint(key, latency));
   }
 
   @Override
@@ -151,7 +157,7 @@ public class OneMeasurementRaw extends OneMeasurement {
         " latency raw data: op, timestamp(ms), latency(us)");
     for (RawDataPoint point : measurements) {
       outputStream.println(
-          String.format("%s,%d,%d", getName(), point.timeStamp(),
+          String.format("%s,%s,%d,%d", getName(), point.key(), point.timeStamp(),
               point.value()));
     }
     if (outputStream != System.out) {

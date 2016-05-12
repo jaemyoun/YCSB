@@ -46,7 +46,7 @@ public class Measurements {
 
   public static final String MEASUREMENT_TYPE_PROPERTY = "measurementtype";
   private static final String MEASUREMENT_TYPE_PROPERTY_DEFAULT = "hdrhistogram";
-  
+
   public static final String MEASUREMENT_INTERVAL = "measurement.interval";
   private static final String MEASUREMENT_INTERVAL_DEFAULT = "op";
 
@@ -193,14 +193,14 @@ public class Measurements {
    * Report a single value of a single metric. E.g. for read latency, operation="READ" and latency is the measured
    * value.
    */
-  public void measure(String operation, int latency)
+  public void measure(String operation, String key, int latency)
   {
     if(_measurementInterval==1)
       return;
     try
     {
       OneMeasurement m = getOpMeasurement(operation);
-      m.measure(latency);
+      m.measure(key, latency);
     }
     // This seems like a terribly hacky way to cover up for a bug in the measurement code
     catch (java.lang.ArrayIndexOutOfBoundsException e)

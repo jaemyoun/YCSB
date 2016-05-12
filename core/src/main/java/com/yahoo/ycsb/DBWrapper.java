@@ -124,7 +124,7 @@ public class DBWrapper extends DB
     long st = System.nanoTime();
     Status res=_db.read(table,key,fields,result);
     long en=System.nanoTime();
-    measure("READ", res, ist, st, en);
+    measure("READ", key, res, ist, st, en);
     _measurements.reportStatus("READ", res);
     return res;
   }
@@ -152,7 +152,12 @@ public class DBWrapper extends DB
     return res;
   }
 
-  private void measure(String op, Status result, long intendedStartTimeNanos,
+  private void measure(String op, String key, Status result, long intendedStartTimeNanos,
+    long startTimeNanos, long endTimeNanos) {
+      measure(op, "", result, intendedStartTimeNanos, startTimeNanos, endTimeNanos);
+  }
+
+  private void measure(String op, String key, Status result, long intendedStartTimeNanos,
       long startTimeNanos, long endTimeNanos) {
     String measurementName = op;
     if (result != Status.OK) {
@@ -163,9 +168,9 @@ public class DBWrapper extends DB
         measurementName = op + "-FAILED";
       }
     }
-    _measurements.measure(measurementName,
+    _measurements.measure(measurementName, key,
         (int)((endTimeNanos-startTimeNanos)/1000));
-    _measurements.measureIntended(measurementName,
+    _measurements.measureIntended(measurementName, key,
         (int)((endTimeNanos-intendedStartTimeNanos)/1000));
   }
 
@@ -207,7 +212,7 @@ public class DBWrapper extends DB
     long st = System.nanoTime();
     Status res=_db.insert(table,key,values);
     long en=System.nanoTime();
-    measure("INSERT", res, ist, st, en);
+    measure("INSERT", key, res, ist, st, en);
     _measurements.reportStatus("INSERT", res);
     return res;
   }
