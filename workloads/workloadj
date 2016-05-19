@@ -39,9 +39,9 @@ fieldlength=100
 #fieldlengthdistribution=uniform
 fieldlengthdistribution=zipfian
 
-readproportion=0.5446
+readproportion=0.01
 updateproportion=0.00
-insertproportion=0.4554
+insertproportion=0.99
 readmodifywriteproportion=0
 scanproportion=0
 
@@ -63,7 +63,7 @@ hotspotopnfraction=0.8
 # How the latency measurements are presented
 # measurementtype=histogram
 #measurementtype=timeseries
-measurementtype=raw
+#measurementtype=raw
 # When measurementtype is set to raw, measurements will be output
 # as RAW datapoints in the following csv format:
 # "operation, timestamp of the measurement, latency in us"
