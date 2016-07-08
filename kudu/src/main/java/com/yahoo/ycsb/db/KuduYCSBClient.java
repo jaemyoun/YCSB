@@ -158,6 +158,9 @@ public class KuduYCSBClient extends com.yahoo.ycsb.DB {
     schema = new Schema(columns);
 
     CreateTableOptions builder = new CreateTableOptions();
+    List<String> rangePartitionColumns = new ArrayList<>(1);
+    rangePartitionColumns.add(KEY);
+    builder.setRangePartitionColumns(rangePartitionColumns);
     builder.setNumReplicas(numReplicas);
     // create n-1 split keys, which will end up being n tablets master-side
     for (int i = 1; i < numTablets + 0; i++) {
@@ -229,22 +232,23 @@ public class KuduYCSBClient extends com.yahoo.ycsb.DB {
         querySchema = COLUMN_NAMES;
         // No need to set the projected columns with the whole schema.
       } else {
-        querySchema = new ArrayList<String>(fields);
+        querySchema = new ArrayList<>(fields);
         scannerBuilder.setProjectedColumnNames(querySchema);
       }
 
       PartialRow lowerBound = schema.newPartialRow();
       lowerBound.addString(0, startkey);
       scannerBuilder.lowerBound(lowerBound);
+
       if (recordcount == 1) {
         PartialRow upperBound = schema.newPartialRow();
-        // Keys are fixed length, just adding something at the end is safe.
-        upperBound.addString(0, startkey.concat(" "));
+        upperBound.addString(0, startkey + '\0');
         scannerBuilder.exclusiveUpperBound(upperBound);
       }
 
-      KuduScanner scanner = scannerBuilder.limit(recordcount) // currently noop
-          .build();
+      scannerBuilder.limit(recordcount); // currently noop
+
+      KuduScanner scanner = scannerBuilder.build();
 
       while (scanner.hasMoreRows()) {
         RowResultIterator data = scanner.nextRows();
