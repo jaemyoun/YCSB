@@ -19,7 +19,8 @@ package com.yahoo.ycsb.generator;
 
 import com.yahoo.ycsb.Utils;
 
-import org.apache.commons.math3.distribution.ZipfDistribution;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generate a popularity distribution of items, skewed to favor recent items significantly more than older items.
@@ -28,7 +29,8 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
 {
 	private double skew;
 	private CounterGenerator basis;
-	private ZipfDistribution zipf;
+  private double bottom = 0;
+	private Map<Integer, Double> zipfReadMap;
 
 	public StrongSkewedLatestGenerator(CounterGenerator basis)
 	{
@@ -39,8 +41,13 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
 	{
 		this.skew = skew;
 		this.basis = basis;
-		this.zipf = new ZipfDistribution(basis.lastValue() + 1, this.skew);
-	}
+		this.zipfReadMap = new HashMap<Integer, Double>();
+		
+		long size = basis.lastValue() + 1L;
+    for(int i=1;i < size; i++) {
+      this.bottom += (1/Math.pow(i, this.skew));
+    }
+	} 
 
 	/**
 	 * Generate the next string in the distribution, skewed Zipfian favoring the items most recently returned by the basis generator.
@@ -49,21 +56,51 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
   public Long nextValue()
 	{
     double u = Utils.random().nextDouble();
-    double st = 0.0d;
-    int next = 1;
+		int next = 1;
+		int loop = 0;
 
-    // System.out.println("u: " + u);
-    while(u >= this.zipf.cumulativeProbability(next)) {
-      next+=15;
+    loop = 1;
+    while(u >= getProbability(next)) {
+      next+=loop * 2;
+      loop++;
     }
-		while(u < this.zipf.cumulativeProbability(next - 1)) {
-			next--;
-		}
+    loop = 1;
+    while(u < getProbability(next - 1)) {
+      next-=loop * 2;
+      loop++;
+    }
+    while(u >= getProbability(next)) {
+      next++;
+    }
 		
 		long ret = basis.lastValue() + 1L - next;
 		setLastValue(ret);
 		return ret;
 	}
+
+	public double getProbability(int index) {
+    Double ret;
+    double cumProbability = 0.0;
+
+    ret = zipfReadMap.get(index);
+    if (ret == null) {
+      for(int i = index; i >= 1; i--) {
+        cumProbability += (1.0d / Math.pow(i, this.skew)) / this.bottom;
+
+        if (i != 1) {
+          ret = zipfReadMap.get(i-1);
+          if (ret != null) {
+            cumProbability += ret.doubleValue();
+            break;
+          }
+        }
+      }
+      zipfReadMap.put(index, cumProbability);
+      ret = new Double(cumProbability);
+    }
+
+    return ret.doubleValue();
+  }
 
 	public static void main(String[] args)
 	{
