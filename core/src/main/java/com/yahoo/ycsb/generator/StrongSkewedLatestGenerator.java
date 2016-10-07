@@ -34,7 +34,7 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
 
 	public StrongSkewedLatestGenerator(CounterGenerator basis)
 	{
-		this(basis, 1.0d);
+		this(basis, 1.5d);
 	}
 
 	public StrongSkewedLatestGenerator(CounterGenerator basis, double skew)
@@ -43,6 +43,8 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
 		this.basis = basis;
 		this.zipfReadMap = new HashMap<Integer, Double>();
 		
+    System.out.println("### DEBUG ### skewed = " + this.skew);
+
 		long size = basis.lastValue() + 1L;
     for(int i=1;i < size; i++) {
       this.bottom += (1/Math.pow(i, this.skew));
