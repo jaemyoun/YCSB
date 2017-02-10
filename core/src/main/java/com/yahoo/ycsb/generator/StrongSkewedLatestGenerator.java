@@ -27,28 +27,21 @@ import java.util.Map;
  */
 public class StrongSkewedLatestGenerator extends NumberGenerator
 {
-	private double skew;
+ 	public static final double ZIPFIAN_ALPHA_ADJUSTMENTS_CONSTANT=2.0;
+
 	private CounterGenerator basis;
-  private double bottom = 0;
-	private Map<Integer, Double> zipfReadMap;
+	private final ZipfianGenerator zipfian;
 
 	public StrongSkewedLatestGenerator(CounterGenerator basis)
 	{
-		this(basis, 1.5d);
+		this(basis, ZIPFIAN_ALPHA_ADJUSTMENTS_CONSTANT);
 	}
 
 	public StrongSkewedLatestGenerator(CounterGenerator basis, double skew)
 	{
-		this.skew = skew;
-		this.basis = basis;
-		this.zipfReadMap = new HashMap<Integer, Double>();
-		
-    System.out.println("### DEBUG ### skewed = " + this.skew);
-
-		long size = basis.lastValue() + 1L;
-    for(int i=1;i < size; i++) {
-      this.bottom += (1/Math.pow(i, this.skew));
-    }
+		this.basis=basis;
+		this.zipfian=new ZipfianGenerator(this.basis.lastValue(), ZipfianGenerator.ZIPFIAN_CONSTANT, skew);
+		nextValue();
 	} 
 
 	/**
@@ -57,52 +50,11 @@ public class StrongSkewedLatestGenerator extends NumberGenerator
 	@Override
   public Long nextValue()
 	{
-    double u = Utils.random().nextDouble();
-		int next = 1;
-		int loop = 0;
-
-    loop = 1;
-    while(u >= getProbability(next)) {
-      next+=loop * 2;
-      loop++;
-    }
-    loop = 1;
-    while(u < getProbability(next - 1)) {
-      next-=loop * 2;
-      loop++;
-    }
-    while(u >= getProbability(next)) {
-      next++;
-    }
-		
-		long ret = basis.lastValue() + 1L - next;
-		setLastValue(ret);
-		return ret;
+		long max=this.basis.lastValue();
+		long next=max-this.zipfian.nextLong(max);
+		setLastValue(next);
+		return next;
 	}
-
-	public double getProbability(int index) {
-    Double ret;
-    double cumProbability = 0.0;
-
-    ret = zipfReadMap.get(index);
-    if (ret == null) {
-      for(int i = index; i >= 1; i--) {
-        cumProbability += (1.0d / Math.pow(i, this.skew)) / this.bottom;
-
-        if (i != 1) {
-          ret = zipfReadMap.get(i-1);
-          if (ret != null) {
-            cumProbability += ret.doubleValue();
-            break;
-          }
-        }
-      }
-      zipfReadMap.put(index, cumProbability);
-      ret = new Double(cumProbability);
-    }
-
-    return ret.doubleValue();
-  }
 
 	public static void main(String[] args)
 	{

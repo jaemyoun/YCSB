@@ -109,6 +109,17 @@ public class ZipfianGenerator extends NumberGenerator
 	}
 
 	/**
+	 * Create a zipfian generator for the specified number of items.
+	 * @param _items The number of items in the distribution.
+	 * @param _zipfianconstant The zipfian constant to use.
+	 * @param _alpha The imporved alpha constant.
+	 */
+	public ZipfianGenerator(long _items, double _zipfianconstant, double _alpha)
+	{
+		this(0, _items-1, _zipfianconstant, zetastatic((_items-1)-0+1,_zipfianconstant), _alpha);
+	}
+
+	/**
 	 * Create a zipfian generator for items between min and max (inclusive) for the specified zipfian constant.
 	 * @param min The smallest integer to generate in the sequence.
 	 * @param max The largest integer to generate in the sequence.
@@ -129,6 +140,20 @@ public class ZipfianGenerator extends NumberGenerator
 	 */
 	public ZipfianGenerator(long min, long max, double _zipfianconstant, double _zetan)
 	{
+		this(min, max, _zipfianconstant, _zetan, 1.0);
+	}
+
+	/**
+	 * Create a zipfian generator for items between min and max (inclusive) for the specified zipfian constant, using the precomputed value of zeta and improved alpha.
+	 * 
+	 * @param min The smallest integer to generate in the sequence.
+	 * @param max The largest integer to generate in the sequence.
+	 * @param _zipfianconstant The zipfian constant to use.
+	 * @param _zetan The precomputed zeta constant.
+	 * @param _alpha The improved alpha constant.
+	 */
+	public ZipfianGenerator(long min, long max, double _zipfianconstant, double _zetan, double _alpha)
+	{
 
 		items=max-min+1;
 		base=min;
@@ -139,7 +164,8 @@ public class ZipfianGenerator extends NumberGenerator
 		zeta2theta=zeta(2,theta);
 
 		
-		alpha=1.0/(1.0-theta);
+		// alpha=1.0/(1.0-theta);
+		alpha= _alpha/(1.0-theta);
 		//zetan=zeta(items,theta);
 		zetan=_zetan;
 		countforzeta=items;
