@@ -36,8 +36,16 @@ LICENSE file.
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.bingo.java</groupId>
+      <artifactId>api</artifactId>
+      <version>${bingo.version}</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/api-${bingo.version}.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <properties>
+    <bingo.version>1.0.3</bingo.version>
   </properties>
 </project>

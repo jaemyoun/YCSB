@@ -27,7 +27,7 @@ This section describes how to run YCSB on Bingo.
 
 Git clone YCSB and compile:
 
-    git clone http://github.com/brianfrankcooper/YCSB.git
+    git clone -b bingo http://github.com/chanyoung/YCSB.git
     cd YCSB
     mvn clean package
 
