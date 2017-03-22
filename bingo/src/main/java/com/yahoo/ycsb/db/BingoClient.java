@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -41,8 +42,24 @@ import bingoJavaApi.Bingo;
  */
 public class BingoClient extends DB {
   private Bingo bingo;
+  
+  public static final String BINGO_HOST_PROPERTY = "bingo.host";
+  public static final String BINGO_HOST_DEFAULT = "localhost";
+  public static final String BINGO_PORT_PROPERTY = "bingo.port";
+  public static final String BINGO_PORT_DEFAULT = "51000";
+  
   public void init() throws DBException {
-    bingo = new Bingo("localhost", 51000);
+    Properties props = getProperties();
+    
+    String host = props.getProperty(BINGO_HOST_PROPERTY);
+    if (host == null) {
+      host = BINGO_HOST_DEFAULT;
+    }
+    String port = props.getProperty(BINGO_PORT_PROPERTY);
+    if (port == null) {
+      port = BINGO_PORT_DEFAULT;
+    }
+    bingo = new Bingo(host, Integer.parseInt(port));
   }
 
   public void cleanup() throws DBException {

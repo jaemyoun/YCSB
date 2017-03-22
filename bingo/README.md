@@ -41,6 +41,18 @@ You can skip the test, EG:
 
 ### 4. Configuration Parameters
 
+- `bingo.host`
+  - The host name of bingo process
+  - Default value is 'localhost'
+
+- `bingo.port`
+  - The port of bingo process
+  - Default value is '51000'
+
+You can set configurations with the shell command, EG: 
+
+    ./bin/ycsb load bingo -s -P workloads/workloada -p "bingo.host=localhost" -p "bingo.port=51000" > outputLoad.txt
+
 ### 5. Load data and run tests
 
 Load the data:
