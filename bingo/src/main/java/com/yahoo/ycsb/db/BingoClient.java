@@ -42,7 +42,7 @@ public class BingoClient extends DB {
 
   @Override
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
-    System.out.println("cleanup");
+    System.out.println("read");
     return Status.OK;
   }
 
