@@ -22,46 +22,77 @@ import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
 import com.yahoo.ycsb.Status;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
+
+import org.json.JSONObject;
+
+import bingoJavaApi.Bingo;
 
 /**
- * YCSB binding for <a href="http://ceph.org/">RADOS of Ceph</a>.
+ * YCSB binding for Bingo.
  *
- * See {@code rados/README.md} for details.
+ * See {@code bingo/README.md} for details.
  */
 public class BingoClient extends DB {
+  private Bingo bingo;
   public void init() throws DBException {
-    System.out.println("init");
+    bingo = new Bingo("localhost", 51000);
   }
 
   public void cleanup() throws DBException {
-    System.out.println("cleanup");
+    try {
+      bingo.shutdown();
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   @Override
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
-    System.out.println("read");
+    ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+    try {
+      bingo.get(oStream, key);
+      oStream.close();
+    } catch (Throwable e1) {
+      e1.printStackTrace();
+      return Status.ERROR;
+    }
     return Status.OK;
   }
 
   @Override
   public Status insert(String table, String key, HashMap<String, ByteIterator> values) {
-    System.out.println("insert");
+    JSONObject json = new JSONObject();
+    for (final Entry<String, ByteIterator> e : values.entrySet()) {
+      json.put(e.getKey(), e.getValue().toString());
+    }
+    String str = json.toString();
+    InputStream iStream = new ByteArrayInputStream(str.getBytes());
+    try {
+      bingo.put(iStream, key, str.getBytes().length);
+      iStream.close();
+    } catch (Throwable e1) {
+      e1.printStackTrace();
+      return Status.ERROR;
+    }
     return Status.OK;
   }
 
   @Override
   public Status delete(String table, String key) {
-    System.out.println("delete");
-    return Status.OK;
+    return Status.NOT_IMPLEMENTED;
   }
 
   @Override
   public Status update(String table, String key, HashMap<String, ByteIterator> values) {
-    System.out.println("update");
-    return Status.OK;
+    return Status.NOT_IMPLEMENTED;
   }
 
   @Override

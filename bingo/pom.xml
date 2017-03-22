@@ -37,6 +37,26 @@ LICENSE file.
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.bingo.java</groupId>
       <artifactId>api</artifactId>
       <version>${bingo.version}</version>
@@ -46,6 +66,8 @@ LICENSE file.
   </dependencies>
 
   <properties>
-    <bingo.version>1.0.3</bingo.version>
+    <json.version>20160212</json.version>
+    <grpc.version>1.2.0</grpc.version><!-- CURRENT_GRPC_VERSION -->
+    <bingo.version>0.1</bingo.version>
   </properties>
 </project>
