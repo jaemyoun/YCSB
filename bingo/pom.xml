@@ -68,6 +68,6 @@ LICENSE file.
   <properties>
     <json.version>20160212</json.version>
     <grpc.version>1.2.0</grpc.version><!-- CURRENT_GRPC_VERSION -->
-    <bingo.version>0.1</bingo.version>
+    <bingo.version>1.1</bingo.version>
   </properties>
 </project>

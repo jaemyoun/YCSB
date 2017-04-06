@@ -75,7 +75,7 @@ public class BingoClient extends DB {
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
     ByteArrayOutputStream oStream = new ByteArrayOutputStream();
     try {
-      bingo.get(oStream, key);
+      bingo.download(oStream, key);
       oStream.close();
     } catch (Throwable e1) {
       e1.printStackTrace();
@@ -93,7 +93,7 @@ public class BingoClient extends DB {
     String str = json.toString();
     InputStream iStream = new ByteArrayInputStream(str.getBytes());
     try {
-      bingo.put(iStream, key, str.getBytes().length);
+      bingo.upload(iStream, key, str.getBytes().length);
       iStream.close();
     } catch (Throwable e1) {
       e1.printStackTrace();
