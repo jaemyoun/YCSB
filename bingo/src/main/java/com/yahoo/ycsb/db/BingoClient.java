@@ -24,7 +24,9 @@ import com.yahoo.ycsb.Status;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.NoRouteToHostException;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
@@ -74,14 +76,44 @@ public class BingoClient extends DB {
   @Override
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
     ByteArrayOutputStream oStream = new ByteArrayOutputStream();
-    try {
-      bingo.download(oStream, key);
-      oStream.close();
-    } catch (Throwable e1) {
-      e1.printStackTrace();
-      return Status.ERROR;
+    Status ret = Status.ERROR;
+    int retryChance = 5;
+    // Try read.
+    while (retryChance > 0) {
+      try {
+        bingo.download(oStream, key);
+        ret = Status.OK;
+        break;
+      } catch (NoRouteToHostException ne) {
+        // If meet NoRouteToHostException: Cannot assign requested address
+        // cause by too many dangling TIME_WAIT status socket in kernel, 
+        // fall back to 10 seconds and retry it.
+        try {
+          Thread.sleep(1 * 1000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          break;
+        }
+      } catch (Throwable e1) {
+        try {
+          Thread.sleep(100 / retryChance);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          break;
+        }
+        retryChance--;
+        if (retryChance == 0) {
+          e1.printStackTrace();
+        }        
+      }
     }
-    return Status.OK;
+    // Clean up.
+    try {
+      oStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return ret;
   }
 
   @Override
@@ -92,14 +124,36 @@ public class BingoClient extends DB {
     }
     String str = json.toString();
     InputStream iStream = new ByteArrayInputStream(str.getBytes());
-    try {
-      bingo.upload(iStream, key, str.getBytes().length);
-      iStream.close();
-    } catch (Throwable e1) {
-      e1.printStackTrace();
-      return Status.ERROR;
+    
+    Status ret = Status.ERROR;
+    // Try write.
+    while (true) {
+      try {
+        bingo.upload(iStream, key, str.getBytes().length);
+        ret = Status.OK;
+        break;
+      } catch (NoRouteToHostException ne) {
+        // If meet NoRouteToHostException: Cannot assign requested address
+        // cause by too many dangling TIME_WAIT status socket in kernel, 
+        // fall back to 10 seconds and retry it.
+        try {
+          Thread.sleep(10 * 1000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          break;
+        }
+      } catch (Throwable e1) {
+        e1.printStackTrace();
+        break;
+      }
     }
-    return Status.OK;
+    // Clean up.
+    try {
+      iStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return ret;
   }
 
   @Override
