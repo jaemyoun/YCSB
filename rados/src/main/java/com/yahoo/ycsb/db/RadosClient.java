@@ -19,25 +19,25 @@ package com.yahoo.ycsb.db;
 
 import com.ceph.rados.Rados;
 import com.ceph.rados.IoCTX;
-// import com.ceph.rados.jna.RadosObjectInfo;
-// import com.ceph.rados.ReadOp;
-// import com.ceph.rados.ReadOp.ReadResult;
+import com.ceph.rados.jna.RadosObjectInfo;
+import com.ceph.rados.ReadOp;
+import com.ceph.rados.ReadOp.ReadResult;
 import com.ceph.rados.exceptions.RadosException;
 
 import com.yahoo.ycsb.ByteIterator;
 import com.yahoo.ycsb.DB;
 import com.yahoo.ycsb.DBException;
 import com.yahoo.ycsb.Status;
-// import com.yahoo.ycsb.StringByteIterator;
+import com.yahoo.ycsb.StringByteIterator;
 
 import java.io.File;
 import java.util.HashMap;
-// import java.util.Map.Entry;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-// import org.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  * YCSB binding for <a href="http://ceph.org/">RADOS of Ceph</a>.
@@ -103,52 +103,51 @@ public class RadosClient extends DB {
 
   @Override
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
-    // byte[] buffer;
+    byte[] buffer;
 
-    // try {
-    //   RadosObjectInfo info = ioctx.stat(key);
-    //   buffer = new byte[(int)info.getSize()];
+    try {
+      RadosObjectInfo info = ioctx.stat(key);
+      buffer = new byte[(int)info.getSize()];
 
-    //   ReadOp rop = ioctx.readOpCreate();
-    //   ReadResult readResult = rop.queueRead(0, info.getSize());
-    //   // TODO: more size than byte length possible;
-    //   // rop.operate(key, Rados.OPERATION_NOFLAG); // for rados-java 0.3.0
-    //   rop.operate(key, 0);
-    //   // readResult.raiseExceptionOnError("Error ReadOP(%d)", readResult.getRVal()); // for rados-java 0.3.0
-    //   if (readResult.getRVal() < 0) {
-    //     throw new RadosException("Error ReadOP", readResult.getRVal());
-    //   }
-    //   if (info.getSize() != readResult.getBytesRead()) {
-    //     return new Status("ERROR", "Error the object size read");
-    //   }
-    //   readResult.getBuffer().get(buffer);
-    // } catch (RadosException e) {
-    //   return new Status("ERROR-" + e.getReturnValue(), e.getMessage());
-    // }
+      ReadOp rop = ioctx.readOpCreate();
+      ReadResult readResult = rop.queueRead(0, info.getSize());
+      // TODO: more size than byte length possible;
+      // rop.operate(key, Rados.OPERATION_NOFLAG); // for rados-java 0.3.0
+      rop.operate(key, 0);
+      // readResult.raiseExceptionOnError("Error ReadOP(%d)", readResult.getRVal()); // for rados-java 0.3.0
+      if (readResult.getRVal() < 0) {
+        throw new RadosException("Error ReadOP", readResult.getRVal());
+      }
+      if (info.getSize() != readResult.getBytesRead()) {
+        return new Status("ERROR", "Error the object size read");
+      }
+      readResult.getBuffer().get(buffer);
+    } catch (RadosException e) {
+      return new Status("ERROR-" + e.getReturnValue(), e.getMessage());
+    }
 
-    // JSONObject json = new JSONObject(new String(buffer, java.nio.charset.StandardCharsets.UTF_8));
-    // Set<String> fieldsToReturn = (fields == null ? json.keySet() : fields);
+    JSONObject json = new JSONObject(new String(buffer, java.nio.charset.StandardCharsets.UTF_8));
+    Set<String> fieldsToReturn = (fields == null ? json.keySet() : fields);
 
-    // for (String name : fieldsToReturn) {
-    //   result.put(name, new StringByteIterator(json.getString(name)));
-    // }
+    for (String name : fieldsToReturn) {
+      result.put(name, new StringByteIterator(json.getString(name)));
+    }
 
-    // return result.isEmpty() ? Status.ERROR : Status.OK;
-    return Status.OK;
+    return result.isEmpty() ? Status.ERROR : Status.OK;
   }
 
   @Override
   public Status insert(String table, String key, HashMap<String, ByteIterator> values) {
-    // JSONObject json = new JSONObject();
-    // for (final Entry<String, ByteIterator> e : values.entrySet()) {
-    //   json.put(e.getKey(), e.getValue().toString());
-    // }
+    JSONObject json = new JSONObject();
+    for (final Entry<String, ByteIterator> e : values.entrySet()) {
+      json.put(e.getKey(), e.getValue().toString());
+    }
 
-    // try {
-    //   ioctx.write(key, json.toString());
-    // } catch (RadosException e) {
-    //   return new Status("ERROR-" + e.getReturnValue(), e.getMessage());
-    // }
+    try {
+      ioctx.write(key, json.toString());
+    } catch (RadosException e) {
+      return new Status("ERROR-" + e.getReturnValue(), e.getMessage());
+    }
     return Status.OK;
   }
 

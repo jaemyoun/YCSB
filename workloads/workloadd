@@ -27,15 +27,12 @@
 # workload here (which we believe is more typical of how people build systems.)
 
 recordcount=1000
-#operationcount=1000
-operationcount=1569298385
+operationcount=1000
 workload=com.yahoo.ycsb.workloads.CoreWorkload
 
 readallfields=true
 
-readproportion=0.54
+readproportion=0.95
 updateproportion=0
 scanproportion=0
-insertproportion=0.46
-
-requestdistribution=stronglatest
+insertproportion=0.05
