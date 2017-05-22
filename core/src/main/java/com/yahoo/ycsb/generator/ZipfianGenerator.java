@@ -81,6 +81,12 @@ public class ZipfianGenerator extends NumberGenerator {
    */
   private boolean allowitemcountdecrease = false;
 
+  /**
+   * The Skewness for SSLG.
+   * by Jae.
+   */
+  private double skew;
+
   /******************************* Constructors **************************************/
 
   /**
@@ -108,6 +114,17 @@ public class ZipfianGenerator extends NumberGenerator {
    */
   public ZipfianGenerator(long items, double zipfianconstant) {
     this(0, items - 1, zipfianconstant);
+  }
+
+  /**
+   * Create a zipfian generator for the specified skewed zipfian constant.
+   *
+   * @param items The number of items in the distribution.
+   * @param zipfianconstant The zipfian constant to use.
+   */
+  public ZipfianGenerator(long items, double zipfianconstant, double skew) {
+    this(0, items - 1, zipfianconstant);
+    this.skew = skew;
   }
 
   /**
@@ -139,7 +156,8 @@ public class ZipfianGenerator extends NumberGenerator {
 
     zeta2theta = zeta(2, theta);
     
-    alpha = 1.0 / (1.0 - theta);
+    // alpha = 1.0 / (1.0 - theta);
+    alpha = skew / (1.0 - theta);
     this.zetan = zetan;
     countforzeta = items;
     eta = (1 - Math.pow(2.0 / items, 1 - theta)) / (1 - zeta2theta / this.zetan);
