@@ -32,7 +32,7 @@ public class StrongSkewedLatestGenerator extends NumberGenerator {
 
   public StrongSkewedLatestGenerator(CounterGenerator basis, double skew) {
     this.basis=basis;
-    this.zipfian=new ZipfianGenerator(this.basis.lastValue(), ZipfianGenerator.ZIPFIAN_CONSTANT, skew);
+    this.zipfian=new ZipfianGenerator(0, this.basis.lastValue()-1, ZipfianGenerator.ZIPFIAN_CONSTANT, skew);
     nextValue();
   } 
 

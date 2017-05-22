@@ -81,12 +81,6 @@ public class ZipfianGenerator extends NumberGenerator {
    */
   private boolean allowitemcountdecrease = false;
 
-  /**
-   * The Skewness for SSLG.
-   * by Jae.
-   */
-  private double skew;
-
   /******************************* Constructors **************************************/
 
   /**
@@ -117,24 +111,25 @@ public class ZipfianGenerator extends NumberGenerator {
   }
 
   /**
-   * Create a zipfian generator for the specified skewed zipfian constant.
-   *
-   * @param items The number of items in the distribution.
-   * @param zipfianconstant The zipfian constant to use.
-   */
-  public ZipfianGenerator(long items, double zipfianconstant, double skew) {
-    this(0, items - 1, zipfianconstant);
-    this.skew = skew;
-  }
-
-  /**
    * Create a zipfian generator for items between min and max (inclusive) for the specified zipfian constant.
    * @param min The smallest integer to generate in the sequence.
    * @param max The largest integer to generate in the sequence.
    * @param zipfianconstant The zipfian constant to use.
    */
   public ZipfianGenerator(long min, long max, double zipfianconstant) {
-    this(min, max, zipfianconstant, zetastatic(max - min + 1, zipfianconstant));
+    this(min, max, zipfianconstant, zetastatic(max - min + 1, zipfianconstant), 1.0);
+  }
+
+  /**
+   * Create a zipfian generator for the specified skewed zipfian constant.
+   * by Jae.
+   * @param min The smallest integer to generate in the sequence.
+   * @param max The largest integer to generate in the sequence.
+   * @param zipfianconstant The zipfian constant to use.
+   * @param skew The skewness to generate in the sequence
+   */
+  public ZipfianGenerator(long min, long max, double zipfianconstant, double skew) {
+    this(min, max, zipfianconstant, zetastatic(max - min + 1, zipfianconstant), skew);
   }
 
   /**
@@ -146,7 +141,7 @@ public class ZipfianGenerator extends NumberGenerator {
    * @param zipfianconstant The zipfian constant to use.
    * @param zetan The precomputed zeta constant.
    */
-  public ZipfianGenerator(long min, long max, double zipfianconstant, double zetan) {
+  public ZipfianGenerator(long min, long max, double zipfianconstant, double zetan, double skew) {
 
     items = max - min + 1;
     base = min;
