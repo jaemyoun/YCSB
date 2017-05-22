@@ -447,6 +447,8 @@ public class CoreWorkload extends Workload {
       keychooser = new ScrambledZipfianGenerator(insertstart, insertstart + insertcount + expectednewkeys);
     } else if (requestdistrib.compareTo("latest") == 0) {
       keychooser = new SkewedLatestGenerator(transactioninsertkeysequence);
+    } else if (requestdistrib.compareTo("stronglatest") == 0) {
+      keychooser = new StrongSkewedLatestGenerator(transactioninsertkeysequence);
     } else if (requestdistrib.equals("hotspot")) {
       double hotsetfraction =
           Double.parseDouble(p.getProperty(HOTSPOT_DATA_FRACTION, HOTSPOT_DATA_FRACTION_DEFAULT));
@@ -663,6 +665,7 @@ public class CoreWorkload extends Workload {
   public void doTransactionRead(DB db) {
     // choose a random key
     int keynum = nextKeynum();
+    System.out.println("### DEBUG ### Read \tkeyname: " + keynum);
 
     String keyname = buildKeyName(keynum);
 
@@ -778,6 +781,7 @@ public class CoreWorkload extends Workload {
   public void doTransactionInsert(DB db) {
     // choose the next key
     int keynum = transactioninsertkeysequence.nextValue();
+    System.out.println("### DEBUG ### Insert \tkeyname: " + keynum);
 
     try {
       String dbkey = buildKeyName(keynum);
