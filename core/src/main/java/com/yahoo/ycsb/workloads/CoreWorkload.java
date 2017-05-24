@@ -665,7 +665,7 @@ public class CoreWorkload extends Workload {
   public void doTransactionRead(DB db) {
     // choose a random key
     int keynum = nextKeynum();
-    System.out.println("### DEBUG ### Read \tkeyname: " + keynum);
+    // System.out.println("### DEBUG ### Read \tkeyname: " + keynum);
 
     String keyname = buildKeyName(keynum);
 
@@ -781,7 +781,7 @@ public class CoreWorkload extends Workload {
   public void doTransactionInsert(DB db) {
     // choose the next key
     int keynum = transactioninsertkeysequence.nextValue();
-    System.out.println("### DEBUG ### Insert \tkeyname: " + keynum);
+    // System.out.println("### DEBUG ### Insert \tkeyname: " + keynum);
 
     try {
       String dbkey = buildKeyName(keynum);
