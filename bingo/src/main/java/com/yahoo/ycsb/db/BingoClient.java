@@ -77,7 +77,7 @@ public class BingoClient extends DB {
   public Status read(String table, String key, Set<String> fields, HashMap<String, ByteIterator> result) {
     ByteArrayOutputStream oStream = new ByteArrayOutputStream();
     Status ret = Status.ERROR;
-    int retryChance = 5;
+    int retryChance = 10;
     // Try read.
     while (retryChance > 0) {
       try {
