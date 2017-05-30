@@ -17,11 +17,13 @@
 
 package com.yahoo.ycsb.generator;
 
+import com.yahoo.ycsb.Utils;
+
 /**
  * Generate a popularity distribution of items, skewed to favor recent items significantly more than older items.
  */
 public class StrongSkewedLatestGenerator extends NumberGenerator {
-  public static final double ZIPFIAN_ALPHA_ADJUSTMENTS_CONSTANT = 1.9;
+  public static final double ZIPFIAN_ALPHA_ADJUSTMENTS_CONSTANT = 8.0;
 
   private CounterGenerator basis;
   private final ZipfianGenerator zipfian;
@@ -43,6 +45,16 @@ public class StrongSkewedLatestGenerator extends NumberGenerator {
   @Override
   public Long nextValue() {
     long max=this.basis.lastValue();
+
+    double u = Utils.random().nextDouble();
+    if (u > 0.65d) {
+      long next = Utils.random().nextLong() % max;
+      if (next < 0) {
+        next = max + next;
+      }
+      return next;
+    } 
+
     long next=max-this.zipfian.nextLong(max);
     setLastValue(next);
     return next;
